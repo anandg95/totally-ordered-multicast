@@ -6,12 +6,14 @@ import sys
 from itertools import groupby
 
 n_nodes = 3
-addr_map = {i: ("localhost", 1233+i) for i in range(1, n_nodes + 1)}
+addr_map = {i: ("localhost", 1233 + i) for i in range(1, n_nodes + 1)}
+
 
 def delivery_handler(obj, msg):
     delivered[obj.id].append(f"{msg.msg_text}")
 
-nodes = {i:TotallyOrderedNode(i, addr_map, delivery_handler) for i in addr_map}
+
+nodes = {i: TotallyOrderedNode(i, addr_map, delivery_handler) for i in addr_map}
 delivered = {i: [] for i in addr_map}
 
 
@@ -29,23 +31,24 @@ def run(node_id):
         time.sleep(random.randint(1, 5))
         msg = f"message-{i} from node-{node_id}"
         nodes[node_id].broadcast_message(msg)
-        
+
+
 def test_ordered_delivery():
     with ThreadPoolExecutor(max_workers=n_nodes) as executor:
         tasks = [executor.submit(run, node_id=node) for node in nodes]
     for task in tasks:
         task.result()
-    
+
     time.sleep(5)
 
     # check if all values in delivered dict are equal
     g = groupby(delivered.values())
     assert next(g) and not next(g, False), "The order of delivery is different"
-    print("-"*40)
+    print("-" * 40)
     print("Test successful. Total order is : ")
     for msg in delivered[1]:
         print(msg)
-    print("-"*40)
+    print("-" * 40)
 
 
 if __name__ == "__main__":
