@@ -21,7 +21,7 @@ class Message:
     @classmethod
     def from_string(cls, msg_str):
         lc, msg_type, sender, msg_text = msg_str.split(";")
-        return cls(lc=float(lc), msg_type=msg_type, sender=sender, msg_text=msg_text)
+        return cls(lc=float(lc), msg_type=msg_type, sender=int(sender), msg_text=msg_text)
 
 
 class PriorityQueue:
