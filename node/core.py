@@ -27,7 +27,7 @@ class TotallyOrderedNode:
         with self.lc_lock:
             self.update_lc()
             msg = str(Message(lc=self.lc, sender=self.id, msg_type=MessageType.MESSAGE, msg_text=msg))
-            # print(f"node-{self.id} : Broadcasting msg with LC : {self.lc}")
+            print(f"node-{self.id} : Broadcasting msg with LC : {self.lc}")
             self._broadcast(msg)
             
     def _acknowledge_message(self, lc_msg):
@@ -63,7 +63,7 @@ class TotallyOrderedNode:
         while keep_going:
             if self.priority_queue.top and len(self.priority_queue.top.acks) == len(self.all_nodes):
                 msg = self.priority_queue.pop() # debug: check in first run, msg_entry == msg
-                print(f"node-{self.id} delivering ...")
+                print(f"node-{self.id} : Delivering message with LC : {msg.lc}")
                 self.delivery_handler(self, msg)
             else:
                 keep_going = False
@@ -74,12 +74,9 @@ class TotallyOrderedNode:
             msg = Message.from_string(msg_str)
             self.update_lc(new_value=msg.lc)
             if msg.msg_type == MessageType.ACK:
-                # print(f"node-{self.id} : Received ACK from {msg.sender} with LC : {msg.lc}")
+                print(f"node-{self.id} : Received ACK from {msg.sender} with LC : {msg.lc}")
                 self._handle_ack_message(msg)
             else:
-                # print(f"node-{self.id} : Received MESSAGE with LC : {msg.lc}")
-                self._handle_message(msg)
-            
-            # print(f"node-{self.id} HEAP : {self.priority_queue.get_stats()}")
-        
+                print(f"node-{self.id} : Received MESSAGE with LC : {msg.lc}")
+                self._handle_message(msg)        
 

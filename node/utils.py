@@ -34,9 +34,7 @@ class PriorityQueue:
             if msg.lc == lc:
                 return msg
 
-        # print("this isnt supposed to be here")
-        # print(self.heap, lc)
-    
+   
     def push(self, msg: Message):
         self.heap.append(msg)
         self.heap.sort(key=lambda x: x.lc, reverse=True) # smallest at the end

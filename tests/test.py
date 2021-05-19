@@ -3,8 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 import random
 import sys
-from signal import signal, SIGINT
-from node import TotallyOrderedNode
+from itertools import groupby
 
 n_nodes = 3
 addr_map = {i: ("localhost", 1233+i) for i in range(1, n_nodes + 1)}
@@ -16,15 +15,13 @@ nodes = {i:TotallyOrderedNode(i, addr_map, delivery_handler) for i in addr_map}
 delivered = {i: [] for i in addr_map}
 
 
-def sig_handler(signal_received, frame):
+def exit_gracefully():
     for node in nodes.values():
         try:
             node.to_socket.close()
         except Exception as e:
             pass
     sys.exit(0)
-
-signal(SIGINT, sig_handler)
 
 
 def run(node_id):
@@ -40,11 +37,17 @@ def test_ordered_delivery():
         task.result()
     
     time.sleep(5)
-    for node, d in delivered.items():
-        print(node)
-        for m in d:
-            print(m)
+
+    # check if all values in delivered dict are equal
+    g = groupby(delivered.values())
+    assert next(g) and not next(g, False), "The order of delivery is different"
+    print("-"*40)
+    print("Test successful. Total order is : ")
+    for msg in delivered[1]:
+        print(msg)
+    print("-"*40)
 
 
 if __name__ == "__main__":
     test_ordered_delivery()
+    exit_gracefully()

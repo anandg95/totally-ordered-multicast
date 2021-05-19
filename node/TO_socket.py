@@ -35,6 +35,7 @@ class TOSocket:
     def all_read_sockets(self):
         return list(self.read_sockets)+[self.server_socket]
 
+
     def _run(self):
         while 1:
             try:
@@ -44,6 +45,7 @@ class TOSocket:
                     if sock.fileno() == -1: # closed
                         print("popping socket ", sock)
                         self.read_sockets.pop(i)
+                continue
 
             for sock in ready_to_read:
                 if sock == self.server_socket:
@@ -53,7 +55,8 @@ class TOSocket:
                     try:
                         self.receive_messages_from_socket(sock)
                     except Exception as e:
-                        print("woah ", e)
+                        print("Unexpected exception ", e)
+                        
                         
 
     def run(self):
