@@ -42,7 +42,7 @@ class TOSocket:
     def _run(self):
         while 1:
             try:
-                ready_to_read, _, __ = select.select(self.all_read_sockets, [], [], 0)
+                ready_to_read, _, __ = select.select(self.all_read_sockets, [], [])
             except ValueError:
                 for i, sock in enumerate(self.read_sockets):
                     if sock.fileno() == -1:  # closed
